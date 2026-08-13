@@ -60,16 +60,16 @@ WakeGPT が管理するのは、Markdown 内で明示的にマークされたク
 
 ## 現在の状態
 
-WakeGPT は現在、オープンソースの **macOS プロトタイプ**です。ソースコードは公開済みですが、一般向けの正式な GitHub バイナリリリースはまだありません。
+WakeGPT は現在、オープンソースの **macOS プロトタイプ**で、最初のダウンロード可能な macOS 版を準備中です。
 
 - Apple Silicon macOS で動作を確認済みです。
-- 最初の正式なバイナリリリースは macOS 版のみを予定しています。
+- 最初のダウンロード版は macOS のみを予定しています。
 - 現在の macOS App Bundle には Apple Silicon と Intel の両方のコードが含まれますが、実機の Intel Mac では未確認です。
-- 公開用 macOS インストーラーには Developer ID 署名と Apple の公証が必要です。ad-hoc 署名のローカルテスト版は正式リリースとして公開しません。
+- 最初の GitHub Release は、hardened runtime を有効にした完全な ad-hoc コードシールを使用しますが、Apple Developer ID では署名されず、Apple の公証も受けません。そのため macOS が初回起動を止める場合があります。
 - ChatGPT サイドカードは実験的機能で、リポジトリに記録された特定のホスト版でのみ検証済みです。ホスト契約が変わった場合は安全に無効化されます。
 - Windows x64 版は開発中で、正式リリースおよび Windows 実機での検証はまだ行われていません。
 
-最初のダウンロード版を追跡するには、このリポジトリを Star または Watch してください。
+リリース後は、このリポジトリの [GitHub Releases](https://github.com/Awaker-OTE/WakeGPT/releases) ページからのみダウンロードし、公開されたチェックサムファイルで SHA-256 を照合してください。WakeGPT を一度開こうとした後、macOS に止められた場合は **システム設定 → プライバシーとセキュリティ → このまま開く** を選びます。[Apple の公式手順](https://support.apple.com/ja-jp/guide/mac-help/mh40616/mac)も参照してください。WakeGPT は Gatekeeper の無効化や `xattr` による隔離属性の削除を求めません。
 
 ## ソースから実行
 
@@ -90,7 +90,7 @@ rustup target add aarch64-apple-darwin x86_64-apple-darwin
 npm run release:macos-universal
 ```
 
-ソースから生成したものは、開発用またはローカル検証用です。Developer ID 署名と Apple 公証を受けた公開インストーラーとは異なります。
+ソースから生成したものは引き続き開発用またはローカル検証用です。GitHub のダウンロード版も Apple 公証は受けませんが、WakeGPT のリリース検査を通し、チェックサムとサプライチェーン記録を添えて公開します。
 
 ## プライバシーと安全性
 

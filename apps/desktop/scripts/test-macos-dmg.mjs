@@ -17,7 +17,7 @@ const root = await mkdtemp(join(tmpdir(), "wakegpt-macos-dmg-test-"));
 const app = join(root, "WakeGPT.app");
 const executableDirectory = join(app, "Contents", "MacOS");
 const executable = join(executableDirectory, "wakegpt-desktop");
-const output = join(root, "WakeGPT_0.1.0_test.dmg");
+const output = join(root, "WakeGPT_0.1.0_universal.dmg");
 
 const run = (arguments_, expectedStatus = 0) => {
   const result = spawnSync(process.execPath, [packager, ...arguments_], {
@@ -31,11 +31,21 @@ const run = (arguments_, expectedStatus = 0) => {
 
 try {
   await mkdir(executableDirectory, { recursive: true });
-  const compiled = spawnSync("/usr/bin/clang", ["-x", "c", "-", "-o", executable], {
-    input: "int main(void) { return 0; }\n",
+  const source = "int main(void) { return 0; }\n";
+  const arm64 = join(root, "wakegpt-arm64");
+  const x86_64 = join(root, "wakegpt-x86_64");
+  for (const [architecture, architectureOutput] of [["arm64", arm64], ["x86_64", x86_64]]) {
+    const compiled = spawnSync(
+      "/usr/bin/clang",
+      ["-arch", architecture, "-x", "c", "-", "-o", architectureOutput],
+      { input: source, encoding: "utf8" },
+    );
+    assert.equal(compiled.status, 0, compiled.stderr || compiled.stdout);
+  }
+  const merged = spawnSync("/usr/bin/lipo", ["-create", arm64, x86_64, "-output", executable], {
     encoding: "utf8",
   });
-  assert.equal(compiled.status, 0, compiled.stderr || compiled.stdout);
+  assert.equal(merged.status, 0, merged.stderr || merged.stdout);
   await chmod(executable, 0o755);
   await writeFile(join(app, "Contents", "Info.plist"), `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -48,44 +58,68 @@ try {
 <key>CFBundleVersion</key><string>1</string>
 </dict></plist>
 `, "utf8");
-  const signed = spawnSync("codesign", ["--force", "--deep", "--sign", "-", app], { encoding: "utf8" });
+  const signed = spawnSync("codesign", [
+    "--force",
+    "--deep",
+    "--options", "runtime",
+    "--timestamp=none",
+    "--sign", "-",
+    app,
+  ], { encoding: "utf8" });
   assert.equal(signed.status, 0, signed.stderr || signed.stdout);
 
-  const baseArguments = ["--app", app, "--output", output, "--volume-name", "WakeGPT Test"];
-  const rejected = run(baseArguments, 1);
+  const missingMode = run([
+    "--app", app,
+    "--output", output,
+    "--volume-name", "WakeGPT",
+  ], 1);
+  assert.match(missingMode.stderr, /--release-mode is required/u);
+
+  const invalidMode = run([
+    "--app", app,
+    "--output", output,
+    "--release-mode", "unsigned",
+    "--volume-name", "WakeGPT",
+  ], 1);
+  assert.match(invalidMode.stderr, /--release-mode must be one of/u);
+
+  const developerIdArguments = [
+    "--app", app,
+    "--output", output,
+    "--release-mode", "developer-id-notarized",
+    "--volume-name", "WakeGPT",
+  ];
+  const rejected = run(developerIdArguments, 1);
   assert.match(rejected.stderr, /Developer ID Application/u);
 
-  const productionNamedOutput = join(root, "WakeGPT_0.1.0_aarch64.dmg");
-  const productionNamed = run([
-    "--app",
-    app,
-    "--output",
-    productionNamedOutput,
-    "--volume-name",
-    "WakeGPT Test",
-    "--allow-adhoc",
-  ], 1);
-  assert.match(productionNamed.stderr, /test-only output filename/u);
+  const baseArguments = [
+    "--app", app,
+    "--output", output,
+    "--release-mode", "adhoc-public-unnotarized",
+    "--volume-name", "WakeGPT",
+  ];
 
-  const packaged = run([...baseArguments, "--allow-adhoc"]);
+  const packaged = run(baseArguments);
   const report = JSON.parse(packaged.stdout.trim());
-  assert.equal(report.file, "WakeGPT_0.1.0_test.dmg");
+  assert.equal(report.file, "WakeGPT_0.1.0_universal.dmg");
   assert.match(report.sha256, /^[a-f0-9]{64}$/u);
-  assert.equal(report.signature, "adhoc-test-only");
-  run([...baseArguments, "--allow-adhoc"], 1);
+  assert.equal(report.mode, "adhoc-public-unnotarized");
+  const dmgSignature = spawnSync("codesign", ["-dv", "--verbose=4", output], { encoding: "utf8" });
+  assert.equal(dmgSignature.status, 0, dmgSignature.stderr || dmgSignature.stdout);
+  assert.match(`${dmgSignature.stdout}${dmgSignature.stderr}`, /^Identifier=com\.wakegpt\.desktop\.dmg$/mu);
+  run(baseArguments, 1);
 
   const linkedDirectory = join(root, "linked");
   await mkdir(linkedDirectory);
   await symlink(app, join(linkedDirectory, "WakeGPT.app"));
-  const linkedOutput = join(root, "linked-test.dmg");
+  const linkedOutput = join(root, "linked.dmg");
   const linked = run([
     "--app",
     join(linkedDirectory, "WakeGPT.app"),
     "--output",
     linkedOutput,
-    "--volume-name",
-    "WakeGPT Test",
-    "--allow-adhoc",
+    "--release-mode", "adhoc-public-unnotarized",
+    "--volume-name", "WakeGPT",
   ], 1);
   assert.match(linked.stderr, /non-symlink directory/u);
 } finally {

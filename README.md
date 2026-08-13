@@ -71,16 +71,16 @@ WakeGPT manages only clearly marked quick-note regions in a Markdown file. The r
 
 ## Project status
 
-WakeGPT is open source and currently available as a **macOS prototype**. The source is public, but there is no official binary GitHub Release yet.
+WakeGPT is open source and currently available as a **macOS prototype**. The first downloadable macOS release is being prepared.
 
 - Runtime behavior has been verified on Apple Silicon macOS.
-- The first official binary release is planned for macOS only.
+- The first downloadable release is planned for macOS only.
 - The current macOS app bundle contains both Apple Silicon and Intel code; execution on physical Intel hardware is still unverified.
-- A public macOS installer still requires Developer ID signing and Apple notarization. Ad-hoc local test builds will not be published as official releases.
+- The first GitHub release will use a complete ad-hoc code seal with hardened runtime, but it will **not** be signed with an Apple Developer ID or notarized by Apple. macOS may therefore block the first launch.
 - The ChatGPT side card is experimental and has been verified only against the exact host versions recorded by this repository. It safely disables itself when the host contract changes.
 - Windows x64 support is in development and is not yet released or verified on physical Windows hardware.
 
-Star or watch the repository to follow the first downloadable release.
+When a release is available, download it only from this repository's [GitHub Releases](https://github.com/Awaker-OTE/WakeGPT/releases) page and compare its SHA-256 value with the published checksum file. After trying to open WakeGPT once, macOS may require you to open **System Settings → Privacy & Security** and choose **Open Anyway**. See [Apple's instructions for opening an app from an unknown developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac). WakeGPT does not ask users to disable Gatekeeper or remove quarantine attributes with `xattr`.
 
 ## Run from source
 
@@ -101,7 +101,7 @@ rustup target add aarch64-apple-darwin x86_64-apple-darwin
 npm run release:macos-universal
 ```
 
-Source builds are development or local-verification artifacts. They are not equivalent to a Developer ID-signed and Apple-notarized public installer.
+Source builds remain development or local-verification artifacts. The downloadable GitHub package will also be unnotarized, but it is produced through WakeGPT's release checks and published with checksums and supply-chain records.
 
 ## Privacy and safety
 

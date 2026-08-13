@@ -28,13 +28,16 @@ const ARCHIVE_NAME = "WakeGPT_universal.app.tar.gz";
 const SIGNATURE_NAME = `${ARCHIVE_NAME}.sig`;
 const MANIFEST_NAME = "latest-darwin-universal.json";
 const OUTPUT_NAMES = [ARCHIVE_NAME, SIGNATURE_NAME, MANIFEST_NAME];
+const RELEASE_MODES = new Set([
+  "adhoc-public-unnotarized",
+  "developer-id-notarized",
+]);
 const SIGNING_ENVIRONMENT = [
   "TAURI_SIGNING_PRIVATE_KEY",
   "TAURI_SIGNING_PRIVATE_KEY_PATH",
   "TAURI_SIGNING_PRIVATE_KEY_PASSWORD",
 ];
 const SEMVER = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u;
-const TEST_NAME = /(?:^|[-_.])test(?:[-_.]|$)/iu;
 
 const appRoot = fileURLToPath(new URL("..", import.meta.url));
 const workspaceRoot = resolve(appRoot, "../..");
@@ -49,18 +52,13 @@ const parseArguments = (arguments_) => {
     "--repository",
     "--public-key",
     "--pub-date",
+    "--release-mode",
     "--notes",
     "--source-date-epoch",
   ]);
   const values = new Map();
-  let allowAdhoc = false;
   for (let index = 0; index < arguments_.length; index += 1) {
     const argument = arguments_[index];
-    if (argument === "--allow-adhoc") {
-      if (allowAdhoc) throw new Error("--allow-adhoc may be provided only once");
-      allowAdhoc = true;
-      continue;
-    }
     if (!allowed.has(argument)) throw new Error(`Unknown argument: ${argument}`);
     if (values.has(argument)) throw new Error(`${argument} may be provided only once`);
     const value = arguments_[index + 1];
@@ -72,19 +70,22 @@ const parseArguments = (arguments_) => {
     if (!values.has(argument)) throw new Error(`${argument} is required`);
   }
   const input = {
-    allowAdhoc,
     app: resolve(values.get("--app")),
     outputDirectory: resolve(values.get("--output-dir")),
     version: values.get("--version"),
     repository: values.get("--repository"),
     publicKey: resolve(values.get("--public-key")),
     pubDate: values.get("--pub-date"),
+    releaseMode: values.get("--release-mode"),
     notes: resolve(values.get("--notes")),
     sourceDateEpoch: values.get("--source-date-epoch"),
   };
   if (basename(input.app) !== APP_NAME) throw new Error(`--app must identify ${APP_NAME}`);
   if (input.version.length > 64 || !SEMVER.test(input.version)) {
     throw new Error("--version must be an unprefixed SemVer value");
+  }
+  if (!RELEASE_MODES.has(input.releaseMode)) {
+    throw new Error(`--release-mode must be one of: ${[...RELEASE_MODES].join(", ")}`);
   }
   if (!/^(?:0|[1-9]\d{0,11})$/u.test(input.sourceDateEpoch)) {
     throw new Error("--source-date-epoch must be a non-negative integer number of seconds");
@@ -94,9 +95,6 @@ const parseArguments = (arguments_) => {
     throw new Error("--source-date-epoch is outside the supported timestamp range");
   }
   input.epoch = epoch;
-  if (allowAdhoc && !TEST_NAME.test(basename(input.outputDirectory))) {
-    throw new Error("--allow-adhoc requires a clearly test-only output directory name");
-  }
   const outputFromApp = relative(input.app, input.outputDirectory);
   const appFromOutput = relative(input.outputDirectory, input.app);
   if (
@@ -168,7 +166,11 @@ const verifyApp = async (app, input) => {
   if (!/flags=.*\bruntime\b/mu.test(signature)) {
     throw new Error(`${APP_NAME} must enable the hardened runtime`);
   }
-  if (!input.allowAdhoc) {
+  if (input.releaseMode === "adhoc-public-unnotarized") {
+    if (!/^Signature=adhoc$/mu.test(signature)) {
+      throw new Error(`${APP_NAME} must use a complete ad-hoc signature for this release mode`);
+    }
+  } else {
     if (!/^Authority=Developer ID Application:/mu.test(signature)) {
       throw new Error(`${APP_NAME} must use a Developer ID Application signature`);
     }
@@ -419,7 +421,7 @@ const main = async () => {
 
     await installOutputs(work, input.outputDirectory);
     console.log(JSON.stringify({
-      mode: input.allowAdhoc ? "adhoc-test-only" : "developer-id-notarized",
+      mode: input.releaseMode,
       version: input.version,
       target: TARGET,
       files: {

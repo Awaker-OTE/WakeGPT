@@ -65,13 +65,18 @@ const run = (arguments_, expectedStatus = 0, environment = {}) => {
   return result;
 };
 
-const packageArguments = (outputDirectory, appPath = app) => [
+const packageArguments = (
+  outputDirectory,
+  appPath = app,
+  releaseMode = "adhoc-public-unnotarized",
+) => [
   "--app", appPath,
   "--output-dir", outputDirectory,
   "--version", "0.1.0",
   "--repository", "wakegpt/wakegpt",
   "--public-key", publicKey,
   "--pub-date", "2026-08-12T00:00:00Z",
+  "--release-mode", releaseMode,
   "--notes", notes,
   "--source-date-epoch", "1786406400",
 ];
@@ -123,34 +128,32 @@ try {
   await chmod(privateKey, 0o600);
   await writeFile(notes, "## 中文\n\n安全更新。\n\n## English\n\nSecurity update.\n", "utf8");
 
-  const formal = run(packageArguments(join(root, "formal")), 1, signingEnvironment());
+  const missingModeArguments = packageArguments(join(root, "missing-mode"));
+  missingModeArguments.splice(missingModeArguments.indexOf("--release-mode"), 2);
+  const missingMode = run(missingModeArguments, 1, signingEnvironment());
+  assert.match(missingMode.stderr, /--release-mode is required/u);
+
+  const invalidModeArguments = packageArguments(join(root, "invalid-mode"));
+  invalidModeArguments[invalidModeArguments.indexOf("--release-mode") + 1] = "unsigned";
+  const invalidMode = run(invalidModeArguments, 1, signingEnvironment());
+  assert.match(invalidMode.stderr, /--release-mode must be one of/u);
+
+  const formal = run(
+    packageArguments(join(root, "formal"), app, "developer-id-notarized"),
+    1,
+    signingEnvironment(),
+  );
   assert.match(formal.stderr, /Developer ID Application/u);
 
-  const ambiguousTestDirectory = join(root, "updater-output");
-  const ambiguous = run([
-    ...packageArguments(ambiguousTestDirectory),
-    "--allow-adhoc",
-  ], 1, signingEnvironment());
-  assert.match(ambiguous.stderr, /test-only output directory/u);
-
-  const missingKey = run([
-    ...packageArguments(join(root, "missing-key-test")),
-    "--allow-adhoc",
-  ], 1);
+  const missingKey = run(packageArguments(join(root, "missing-key")), 1);
   assert.match(missingKey.stderr, /exactly one updater private key/u);
 
-  const firstDirectory = join(root, "first-test");
-  const secondDirectory = join(root, "second-test");
-  const first = run([
-    ...packageArguments(firstDirectory),
-    "--allow-adhoc",
-  ], 0, signingEnvironment());
-  const second = run([
-    ...packageArguments(secondDirectory),
-    "--allow-adhoc",
-  ], 0, signingEnvironment());
+  const firstDirectory = join(root, "first-public");
+  const secondDirectory = join(root, "second-public");
+  const first = run(packageArguments(firstDirectory), 0, signingEnvironment());
+  const second = run(packageArguments(secondDirectory), 0, signingEnvironment());
   const firstReport = JSON.parse(first.stdout.trim());
-  assert.equal(firstReport.mode, "adhoc-test-only");
+  assert.equal(firstReport.mode, "adhoc-public-unnotarized");
   assert.equal(firstReport.version, "0.1.0");
   assert.equal(firstReport.target, "darwin-universal");
   assert.match(firstReport.files.archive.sha256, /^[a-f0-9]{64}$/u);
@@ -187,38 +190,34 @@ try {
   });
   assert.equal(compared.status, 0, compared.stderr || compared.stdout);
 
-  const collision = run([
-    ...packageArguments(firstDirectory),
-    "--allow-adhoc",
-  ], 1, signingEnvironment());
+  const collision = run(packageArguments(firstDirectory), 1, signingEnvironment());
   assert.match(collision.stderr, /already exists/u);
 
   const linkedAppDirectory = join(root, "linked-app");
   await mkdir(linkedAppDirectory);
   const linkedApp = join(linkedAppDirectory, "WakeGPT.app");
   await symlink(app, linkedApp);
-  const linked = run([
-    ...packageArguments(join(root, "linked-app-test"), linkedApp),
-    "--allow-adhoc",
-  ], 1, signingEnvironment());
+  const linked = run(
+    packageArguments(join(root, "linked-app-output"), linkedApp),
+    1,
+    signingEnvironment(),
+  );
   assert.match(linked.stderr, /non-symlink directory/u);
 
   const linkedKey = join(root, "linked-update.key");
   await symlink(privateKey, linkedKey);
-  const linkedKeyResult = run([
-    ...packageArguments(join(root, "linked-key-test")),
-    "--allow-adhoc",
-  ], 1, {
+  const linkedKeyResult = run(packageArguments(join(root, "linked-key")), 1, {
     [keyPathVariable]: linkedKey,
     [keyPasswordVariable]: signerTestPhrase,
   });
   assert.match(linkedKeyResult.stderr, /non-symlink file/u);
 
   const wrongPassword = ["wrong", "temporary", "phrase"].join("-");
-  const signingFailure = run([
-    ...packageArguments(join(root, "signing-failure-test")),
-    "--allow-adhoc",
-  ], 1, signingEnvironment(wrongPassword));
+  const signingFailure = run(
+    packageArguments(join(root, "signing-failure")),
+    1,
+    signingEnvironment(wrongPassword),
+  );
   assert.match(signingFailure.stderr, /Tauri updater signing failed/u);
   assert.doesNotMatch(signingFailure.stderr, new RegExp(signerTestPhrase, "u"));
   assert.doesNotMatch(signingFailure.stderr, new RegExp(privateKey.replaceAll("/", "\\/"), "u"));

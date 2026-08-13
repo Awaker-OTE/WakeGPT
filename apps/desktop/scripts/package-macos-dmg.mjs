@@ -14,18 +14,17 @@ import { basename, dirname, extname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
 const EXPECTED_BUNDLE_ID = "com.wakegpt.desktop";
+const EXPECTED_DMG_ID = `${EXPECTED_BUNDLE_ID}.dmg`;
+const RELEASE_MODES = new Set([
+  "adhoc-public-unnotarized",
+  "developer-id-notarized",
+]);
 
 const parseArguments = (arguments_) => {
   const values = new Map();
-  let allowAdhoc = false;
   for (let index = 0; index < arguments_.length; index += 1) {
     const argument = arguments_[index];
-    if (argument === "--allow-adhoc") {
-      if (allowAdhoc) throw new Error("--allow-adhoc may be provided only once");
-      allowAdhoc = true;
-      continue;
-    }
-    if (!["--app", "--output", "--volume-name"].includes(argument)) {
+    if (!["--app", "--output", "--release-mode", "--volume-name"].includes(argument)) {
       throw new Error(`Unknown argument: ${argument}`);
     }
     if (values.has(argument)) throw new Error(`${argument} may be provided only once`);
@@ -34,7 +33,7 @@ const parseArguments = (arguments_) => {
     values.set(argument, value);
     index += 1;
   }
-  for (const required of ["--app", "--output", "--volume-name"]) {
+  for (const required of ["--app", "--output", "--release-mode", "--volume-name"]) {
     if (!values.has(required)) throw new Error(`${required} is required`);
   }
   const volumeName = values.get("--volume-name");
@@ -43,12 +42,13 @@ const parseArguments = (arguments_) => {
   }
   const app = resolve(values.get("--app"));
   const output = resolve(values.get("--output"));
+  const releaseMode = values.get("--release-mode");
   if (basename(app) !== "WakeGPT.app") throw new Error("--app must identify WakeGPT.app");
   if (extname(output).toLowerCase() !== ".dmg") throw new Error("--output must end in .dmg");
-  if (allowAdhoc && !/(?:^|[-_.])test(?:[-_.]|$)/iu.test(basename(output))) {
-    throw new Error("--allow-adhoc requires a clearly test-only output filename");
+  if (!RELEASE_MODES.has(releaseMode)) {
+    throw new Error(`--release-mode must be one of: ${[...RELEASE_MODES].join(", ")}`);
   }
-  return { allowAdhoc, app, output, volumeName };
+  return { app, output, releaseMode, volumeName };
 };
 
 const run = (command, arguments_, options = {}) => {
@@ -77,17 +77,25 @@ const validatePathType = async (path, expected, label) => {
   }
 };
 
-const verifyApp = async (app, allowAdhoc) => {
+const verifyApp = async (app, releaseMode) => {
   await validatePathType(app, "isDirectory", "WakeGPT.app");
   run("codesign", ["--verify", "--deep", "--strict", "--verbose=2", app]);
   const signature = run("codesign", ["-dv", "--verbose=4", app]);
-  if (!allowAdhoc) {
+  if (!/flags=.*\bruntime\b/mu.test(signature)) {
+    throw new Error("WakeGPT.app must enable the hardened runtime");
+  }
+  if (releaseMode === "adhoc-public-unnotarized") {
+    if (!/^Signature=adhoc$/mu.test(signature)) {
+      throw new Error("WakeGPT.app must use a complete ad-hoc signature for this release mode");
+    }
+  } else {
     if (!/^Authority=Developer ID Application:/mu.test(signature)) {
       throw new Error("WakeGPT.app must use a Developer ID Application signature");
     }
-    if (!/flags=.*\bruntime\b/mu.test(signature)) {
-      throw new Error("WakeGPT.app must enable the hardened runtime");
+    if (!/^TeamIdentifier=\S+/mu.test(signature) || !/^Timestamp=\S+/mu.test(signature)) {
+      throw new Error("WakeGPT.app must have a timestamped Developer ID signature");
     }
+    run("xcrun", ["stapler", "validate", app]);
   }
   const info = join(app, "Contents", "Info.plist");
   await validatePathType(info, "isFile", "Info.plist");
@@ -96,6 +104,14 @@ const verifyApp = async (app, allowAdhoc) => {
   const executableName = commandOutput("plutil", ["-extract", "CFBundleExecutable", "raw", "-o", "-", info]);
   const executable = join(app, "Contents", "MacOS", executableName);
   await validatePathType(executable, "isFile", "WakeGPT executable");
+  const architectures = new Set(commandOutput("lipo", ["-archs", executable]).split(/\s+/u));
+  if (
+    architectures.size !== 2
+    || !architectures.has("arm64")
+    || !architectures.has("x86_64")
+  ) {
+    throw new Error("WakeGPT.app executable must contain exactly arm64 and x86_64 slices");
+  }
   const version = commandOutput("plutil", ["-extract", "CFBundleShortVersionString", "raw", "-o", "-", info]);
   return { executable, signature, version };
 };
@@ -123,7 +139,8 @@ const syncFileAndDirectory = async (path) => {
 
 const main = async () => {
   if (process.platform !== "darwin") throw new Error("macOS DMG packaging is supported only on macOS");
-  const { allowAdhoc, app, output, volumeName } = parseArguments(process.argv.slice(2));
+  const { app, output, releaseMode, volumeName } = parseArguments(process.argv.slice(2));
+  const isAdhoc = releaseMode === "adhoc-public-unnotarized";
   const outputParent = dirname(output);
   await mkdir(outputParent, { recursive: true });
   await validatePathType(outputParent, "isDirectory", "DMG output directory");
@@ -134,8 +151,8 @@ const main = async () => {
     if (error?.code !== "ENOENT") throw error;
   }
 
-  const source = await verifyApp(app, allowAdhoc);
-  const signingIdentity = allowAdhoc ? "-" : `${process.env.APPLE_SIGNING_IDENTITY || ""}`.trim();
+  const source = await verifyApp(app, releaseMode);
+  const signingIdentity = isAdhoc ? "-" : `${process.env.APPLE_SIGNING_IDENTITY || ""}`.trim();
   if (!signingIdentity) throw new Error("APPLE_SIGNING_IDENTITY is required for a release DMG");
 
   const work = await mkdtemp(join(tmpdir(), "wakegpt-macos-dmg-"));
@@ -149,7 +166,7 @@ const main = async () => {
     await mkdir(mounted);
     run("ditto", [app, stagedApp]);
     run("diff", ["-rq", app, stagedApp]);
-    await verifyApp(stagedApp, allowAdhoc);
+    await verifyApp(stagedApp, releaseMode);
     await symlink("/Applications", join(staging, "Applications"));
 
     run("hdiutil", [
@@ -165,12 +182,23 @@ const main = async () => {
       "-nospotlight",
       partial,
     ]);
-    const signArguments = ["--force", "--sign", signingIdentity];
-    signArguments.push(allowAdhoc ? "--timestamp=none" : "--timestamp", partial);
+    const signArguments = [
+      "--force",
+      "--identifier", EXPECTED_DMG_ID,
+      "--sign", signingIdentity,
+    ];
+    signArguments.push(isAdhoc ? "--timestamp=none" : "--timestamp", partial);
     run("codesign", signArguments);
     run("codesign", ["--verify", "--strict", "--verbose=2", partial]);
     const dmgSignature = run("codesign", ["-dv", "--verbose=4", partial]);
-    if (!allowAdhoc) {
+    if (!new RegExp(`^Identifier=${EXPECTED_DMG_ID.replaceAll(".", "\\.")}$`, "mu").test(dmgSignature)) {
+      throw new Error("DMG has an unexpected code-signing identifier");
+    }
+    if (isAdhoc) {
+      if (!/^Signature=adhoc$/mu.test(dmgSignature)) {
+        throw new Error("DMG must use an ad-hoc signature for this release mode");
+      }
+    } else {
       if (!/^Authority=Developer ID Application:/mu.test(dmgSignature)) {
         throw new Error("DMG must use a Developer ID Application signature");
       }
@@ -192,7 +220,7 @@ const main = async () => {
     ]);
     attached = true;
     const mountedApp = join(mounted, "WakeGPT.app");
-    const mountedState = await verifyApp(mountedApp, allowAdhoc);
+    const mountedState = await verifyApp(mountedApp, releaseMode);
     run("diff", ["-rq", app, mountedApp]);
     if (await sha256(source.executable) !== await sha256(mountedState.executable)) {
       throw new Error("Mounted DMG executable does not match the signed source app");
@@ -208,7 +236,7 @@ const main = async () => {
       file: basename(output),
       sha256: await sha256(output),
       version: source.version,
-      signature: allowAdhoc ? "adhoc-test-only" : "developer-id",
+      mode: releaseMode,
     }));
   } finally {
     if (attached) spawn("hdiutil", ["detach", mounted]);
