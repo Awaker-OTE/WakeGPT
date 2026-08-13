@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "canonical": {
+    "version": "SPDX License List 3.28.0",
+    "licenses": {
+      "0BSD": { "sha256": "e3f18c71e10d673590eb9856c1d79dd3b4b0d65404efb5e8584dbede7edd608b" },
+      "Apache-2.0": { "sha256": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff" },
+      "BSD-3-Clause": { "sha256": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d" },
+      "CC-BY-4.0": { "sha256": "d557539df68e771cc1eedcc91d13f70fca930e508d11eedcafa4b15db49e3744" },
+      "CC0-1.0": { "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499" },
+      "CDLA-Permissive-2.0": { "sha256": "4531a67d443284d93ffed0803df5b10634aff21c3d77e381f2d48af01d875868" },
+      "ISC": { "sha256": "f2ec607f67bb0dd3053b49835b02110d5cd0f8eb6da3aac4dc0b142a6b299be9" },
+      "LGPL-2.1-or-later": { "sha256": "5749785c8bdefafcb5d798270ed0a967036fe2ca63dcedade1627565dfef81d2" },
+      "MIT": { "sha256": "b05785f9f18e6716bab63424b11454513b9943a222595b70411009202fc592b5" },
+      "MIT-0": { "sha256": "59746d6285ffa44bfc7ecada352aa5d6a20dc8eab418a60ce091cc739012c135" },
+      "MPL-2.0": { "sha256": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172" },
+      "Unicode-3.0": { "sha256": "f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1" },
+      "Unlicense": { "sha256": "0bdebfeda07d45dada625ae1317c6f833186e798b171d0db640bcf32e92a8240" },
+      "Zlib": { "sha256": "bfb1112d49db5b1daecdfef24bd7e2f3ea0bafb33aa67aa0ab51e2bf8407c03d" }
+    },
+    "exceptions": {
+      "LLVM-exception": { "sha256": "e34c58338bd89d43e709e226610d8f32b3e3c47f4ad9a99a8dc1d4ac7842488e" }
+    }
+  },
+  "npmFamilies": [
+    { "prefix": "@esbuild/", "parent": "esbuild", "versionMatch": true },
+    { "prefix": "@rollup/rollup-", "parent": "rollup", "versionMatch": true },
+    { "prefix": "@tauri-apps/cli-", "parent": "@tauri-apps/cli", "versionMatch": true }
+  ],
+  "cargoCanonicalOnly": [
+    {
+      "package": "selectors@0.36.1",
+      "repository": "https://github.com/servo/stylo",
+      "revision": "635e1a19d02960588a00e189bd4bd5bdb150ec3d",
+      "reason": "The published crate declares MPL-2.0 but omits a root license text; use the pinned canonical MPL-2.0 text."
+    }
+  ],
+  "cargoRemoteEvidence": [
+    {
+      "packages": ["alloc-stdlib@0.2.4"],
+      "repository": "https://github.com/dropbox/rust-alloc-no-stdlib",
+      "revision": "ae42d22078b98549e987d2f03d12df7b984fde47",
+      "files": [{ "path": "LICENSE", "sha256": "c0c56f26d9c051cac4d200c34c84e7ae9aaa853e01a982a1df08b09931e518ae" }]
+    },
+    {
+      "packages": ["dlopen2@0.8.2", "dlopen2_derive@0.4.3"],
+      "repository": "https://github.com/OpenByteDev/dlopen2",
+      "revision": "cc80e4a0a90d499b677fdf7743699b4b3a43a989",
+      "files": [{ "path": "LICENSE", "sha256": "39fa265207450e77c62e90c5594a06c085b655d8374c7ced4bf7894b6bd95dd2" }]
+    },
+    {
+      "packages": ["jni-sys-macros@0.4.1"],
+      "repository": "https://github.com/jni-rs/jni-sys",
+      "revision": "64d77b7a5f119d7b55b4e2c169a4668067ff59e6",
+      "files": [
+        { "path": "LICENSE-APACHE", "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08" },
+        { "path": "LICENSE-MIT", "sha256": "1d85bd754b04ceec93e98e890edd1fa3c6a22e81bcb32135806beeccefa51cd1" }
+      ]
+    },
+    {
+      "packages": ["libappindicator-sys@0.9.0"],
+      "repository": "https://github.com/tauri-apps/libappindicator-rs",
+      "revision": "eafd1e3682a1247f595410266091e9684021cb6f",
+      "files": [
+        { "path": "LICENSE-APACHE", "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2" },
+        { "path": "LICENSE-MIT", "sha256": "eb227437252b2a7a9c1fc342c93ade1f3d7ce38cc6dd754f613db07d53ceff0b" }
+      ]
+    },
+    {
+      "packages": ["ndk@0.9.0", "ndk-sys@0.6.0+11769913"],
+      "repository": "https://github.com/rust-mobile/ndk",
+      "revision": "49bbbba16c58ff63cb8a0ad0eca5a9fb7ecaec25",
+      "files": [
+        { "path": "LICENSE-APACHE", "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4" },
+        { "path": "LICENSE-MIT", "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1" }
+      ]
+    },
+    {
+      "packages": ["block2@0.6.2"],
+      "repository": "https://github.com/madsmtm/objc2",
+      "revision": "b4167b582b2f75f9a1be75495c41b765344fd03c",
+      "files": [{ "path": "LICENSE.md", "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54" }]
+    },
+    {
+      "packages": ["dispatch2@0.3.1", "objc2@0.6.4"],
+      "repository": "https://github.com/madsmtm/objc2",
+      "revision": "8852b424193ca41602281b3d7540d7c8ed51e49a",
+      "files": [{ "path": "LICENSE.md", "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54" }]
+    },
+    {
+      "packages": [
+        "objc2-app-kit@0.3.2", "objc2-cloud-kit@0.3.2", "objc2-core-data@0.3.2",
+        "objc2-core-foundation@0.3.2", "objc2-core-graphics@0.3.2", "objc2-core-image@0.3.2",
+        "objc2-core-location@0.3.2", "objc2-core-text@0.3.2", "objc2-foundation@0.3.2",
+        "objc2-io-surface@0.3.2", "objc2-osa-kit@0.3.2", "objc2-quartz-core@0.3.2",
+        "objc2-ui-kit@0.3.2", "objc2-user-notifications@0.3.2", "objc2-web-kit@0.3.2"
+      ],
+      "repository": "https://github.com/madsmtm/objc2",
+      "revision": "7b1abfd750a2cacaea71d6a56ecfb83cb7de560b",
+      "files": [{ "path": "LICENSE.md", "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54" }]
+    },
+    {
+      "packages": ["objc2-encode@4.1.0", "objc2-exception-helper@0.1.1"],
+      "repository": "https://github.com/madsmtm/objc2",
+      "revision": "8d214f5477365ffcbcbb7de058c86ed9a518efb7",
+      "files": [{ "path": "LICENSE.md", "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54" }]
+    },
+    {
+      "packages": ["tauri-plugin@2.6.3"],
+      "repository": "https://github.com/tauri-apps/tauri",
+      "revision": "6f6ab1207bb3923c2721fbc67d2fdb1c8deb0c7a",
+      "files": [
+        { "path": "LICENSE_APACHE-2.0", "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594" },
+        { "path": "LICENSE_MIT", "sha256": "9dd42ea92cff2ede5cd477cbfcce051b2d0115c0ac7f368ee88cb545055dff1d" }
+      ]
+    },
+    {
+      "packages": ["unic-char-property@0.9.0", "unic-char-range@0.9.0", "unic-common@0.9.0", "unic-ucd-version@0.9.0"],
+      "repository": "https://github.com/open-i18n/rust-unic",
+      "revision": "5878605364af97a3358368a6eaef02104af2e016",
+      "files": [
+        { "path": "COPYRIGHT.md", "sha256": "f5c342c49f3ac804f3e8e7bb62a8040a44c50d47bb36902b1abd13f66a1adf8b" },
+        { "path": "LICENSE-APACHE", "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2" },
+        { "path": "LICENSE-MIT", "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3" }
+      ]
+    },
+    {
+      "packages": ["unic-ucd-ident@0.9.0"],
+      "repository": "https://github.com/open-i18n/rust-unic",
+      "revision": "8a6ce83063d90b91ae2ce59eddb803edd393fca9",
+      "files": [
+        { "path": "COPYRIGHT.md", "sha256": "f5c342c49f3ac804f3e8e7bb62a8040a44c50d47bb36902b1abd13f66a1adf8b" },
+        { "path": "LICENSE-APACHE", "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2" },
+        { "path": "LICENSE-MIT", "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3" }
+      ]
+    },
+    {
+      "packages": ["webview2-com@0.38.2", "webview2-com-sys@0.38.2"],
+      "repository": "https://github.com/wravery/webview2-rs",
+      "revision": "b74dc5e2b394044bea5191052868ce7a106c202c",
+      "files": [{ "path": "LICENSE", "sha256": "0dcf41516e608bbcb6cdc5229feb7b86fe4a643b85e7df251133c93408fdac73" }]
+    },
+    {
+      "packages": ["webview2-com-macros@0.8.1"],
+      "repository": "https://github.com/wravery/webview2-rs",
+      "revision": "dffa41a8a46d3f5565eefbff2de57d38d399f158",
+      "files": [{ "path": "LICENSE", "sha256": "0dcf41516e608bbcb6cdc5229feb7b86fe4a643b85e7df251133c93408fdac73" }]
+    },
+    {
+      "packages": ["tao-macros@0.1.3"],
+      "repository": "https://github.com/tauri-apps/tao",
+      "revision": "340684d932b6126bed449fc1f4edca81776ad592",
+      "versionEvidence": {
+        "kind": "git-tag",
+        "tag": "tao-macros-v0.1.3",
+        "tagObject": "340684d932b6126bed449fc1f4edca81776ad592",
+        "version": "0.1.3"
+      },
+      "files": [{ "path": "LICENSE", "sha256": "6dc0e068dcf3a5bc8e054205b85b7720e1d49265bbc64bf515d2cf79197df69a" }]
+    },
+    {
+      "packages": ["rustls-platform-verifier-android@0.1.1"],
+      "repository": "https://github.com/rustls/rustls-platform-verifier",
+      "revision": "00e6363e0f4e0d9a9dcf3f89733e7413ff5b61e4",
+      "versionEvidence": {
+        "kind": "git-tag",
+        "tag": "v/0.1.1",
+        "tagObject": "28e5e5218cdf64daa6a43ec8d0ae36c4bab82d31",
+        "version": "0.1.1"
+      },
+      "files": [
+        { "path": "LICENSE-APACHE", "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4" },
+        { "path": "LICENSE-MIT", "sha256": "1c7cf76689c837a68ed8d704994e52a0f2940c087958f860d17f3186afbdcc0c" }
+      ]
+    },
+    {
+      "packages": ["winapi-i686-pc-windows-gnu@0.4.0", "winapi-x86_64-pc-windows-gnu@0.4.0"],
+      "repository": "https://github.com/retep998/winapi-rs",
+      "revision": "796a8e6c2971dc2ff1bcff166e6671284f9b5b6b",
+      "files": [
+        { "path": "LICENSE-APACHE", "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1" },
+        { "path": "LICENSE-MIT", "sha256": "ce7bc3499fee93d5022ef430d5e4201e79a6d9154f3974e42f41349f0569e09b" }
+      ],
+      "packageVersionEvidence": {
+        "winapi-i686-pc-windows-gnu@0.4.0": {
+          "kind": "manifest",
+          "path": "i686/Cargo.toml",
+          "sha256": "2b366e86c69e5c0ca208cb244ad2aaf9c97a7f9310b711dd722f8db827b64c9f",
+          "version": "0.4.0"
+        },
+        "winapi-x86_64-pc-windows-gnu@0.4.0": {
+          "kind": "manifest",
+          "path": "x86_64/Cargo.toml",
+          "sha256": "bfae0ed252a110efdc81caa66355772db19cf2a3619d591118e7bc271a661d26",
+          "version": "0.4.0"
+        }
+      }
+    }
+  ]
+}

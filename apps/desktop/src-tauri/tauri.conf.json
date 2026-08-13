@@ -1,0 +1,88 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "WakeGPT",
+  "version": "0.1.0",
+  "identifier": "com.wakegpt.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run generate:icons && npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "WakeGPT",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 640,
+        "center": true,
+        "resizable": true,
+        "decorations": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "trafficLightPosition": {
+          "x": 14,
+          "y": 16
+        },
+        "dragDropEnabled": false
+      },
+      {
+        "label": "quick-capture",
+        "title": "WakeGPT 快速记录",
+        "url": "index.html?surface=quick-capture",
+        "create": true,
+        "width": 432,
+        "height": 600,
+        "minWidth": 432,
+        "minHeight": 520,
+        "maxWidth": 432,
+        "maxHeight": 720,
+        "resizable": false,
+        "maximizable": false,
+        "minimizable": false,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "focus": false,
+        "preventOverflow": {
+          "width": 8,
+          "height": 8
+        },
+        "dragDropEnabled": false
+      }
+    ],
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "connect-src": "ipc: http://ipc.localhost",
+        "font-src": "'self' data:",
+        "img-src": "'self' asset: http://asset.localhost blob: data:",
+        "style-src": "'self' 'unsafe-inline'",
+        "object-src": "'none'",
+        "frame-src": "'none'",
+        "base-uri": "'none'"
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "",
+      "endpoints": []
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/icon.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+[package]
+name = "wakegpt-desktop"
+version = "0.1.0"
+description = "Local-first quick capture and managed Markdown notes"
+authors = ["WakeGPT Contributors"]
+license = "Apache-2.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "wakegpt_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.40.1", default-features = false, features = ["bundled"] }
+time = { version = "0.3.54", features = ["formatting", "local-offset", "macros"] }
+uuid = { version = "1.24.0", features = ["serde", "v7"] }
+# SHA-256 file/attachment receipts; RustCrypto, MIT OR Apache-2.0, replaceable by an audited platform hasher.
+sha2 = "=0.10.9"
+# Native user-mediated workspace/file selection; official Tauri plugin, MIT OR Apache-2.0.
+tauri-plugin-dialog = "=2.7.2"
+# Native per-user login item; official Tauri plugin, MIT OR Apache-2.0, with Windows support retained.
+tauri-plugin-autostart = "=2.5.1"
+# Signed HTTPS application updates; official Tauri plugin, MIT OR Apache-2.0.
+tauri-plugin-updater = "=2.10.1"
+# Bounded streaming updater transport and verification; versions already locked by the updater plugin.
+reqwest = { version = "=0.13.4", default-features = false, features = ["stream", "rustls-no-provider"] }
+futures-util = "=0.3.33"
+base64 = "=0.22.1"
+minisign-verify = "=0.2.5"
+rustls = { version = "=0.23.42", default-features = false, features = ["ring"] }
+# Anchored macOS filesystem primitives and full-fsync support; rust-lang/libc, MIT OR Apache-2.0.
+libc = "=0.2.189"
+# Loopback-only Chrome DevTools Protocol WebSocket transport; MIT OR Apache-2.0,
+# replaceable by a future official Codex extension surface.
+tungstenite = { version = "=0.30.0", default-features = false, features = ["handshake"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# Native system Trash with the resulting URL required for deterministic restore receipts.
+objc2-foundation = { version = "=0.3.2", default-features = false, features = ["std", "NSBundle", "NSError", "NSFileManager", "NSString", "NSURL"] }
+# Native running-app detection and graceful user-confirmed Codex restart; Zlib OR Apache-2.0 OR MIT.
+objc2-app-kit = { version = "=0.3.2", default-features = false, features = ["std", "libc", "NSRunningApplication", "NSWorkspace"] }

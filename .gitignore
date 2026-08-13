@@ -1,0 +1,87 @@
+.DS_Store
+
+# Secrets and signing material
+.env
+.env.*
+!.env.example
+*.key
+*.keystore
+*.jks
+*.p8
+*.p12
+*.pem
+*.pfx
+*.mobileprovision
+
+# Local-only workspace state
+/.space-seed/
+/.agents/
+/AGENTS.override.md
+/.private/
+/.local/
+/.codex-log/
+/crash-reports/
+/docs/法律/
+
+# Generated output
+/dist/
+/artifacts/
+/release-output/
+*.log
+
+# Editors
+.idea/
+.vscode/
+
+# Rust
+/target/
+**/*.rs.bk
+
+# Node
+node_modules/
+apps/desktop/dist/
+apps/desktop/src-tauri/target/
+
+# Local runtime
+.wakegpt/
+*.sqlite3
+*.sqlite3-*
+
+# Secrets and local env
+.env
+.env.*
+!.env.example
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Build / release outputs
+dist/
+artifacts/
+release-output/
+*.dmg
+*.app/
+
+# Local override rules
+AGENTS.override.md
+
+# Local root workbench documents
+/CONTEXT.md
+/测试.md
+/方案-本地-*.md
+/指南-本地-*.md
+/策略-本地-*.md
+/笔记-本地-*.md
+/设计-本地-*.md
+
+# Tauri / package outputs
+apps/desktop/src-tauri/binaries/*
+!apps/desktop/src-tauri/binaries/.gitkeep
+apps/desktop/src-tauri/gen/
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/icons/*
+!apps/desktop/src-tauri/icons/wakegpt-icon.svg
+release-output/
+*.dmg
