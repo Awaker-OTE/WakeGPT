@@ -13,18 +13,26 @@
 </p>
 
 <p align="center">
+  <strong>Capture → Keep in Markdown → Reuse in ChatGPT</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.0"><strong>Download for macOS</strong></a> ·
+  <a href="#what-wakegpt-does">See features</a> ·
+  <a href="#project-status">Project status</a> ·
+  <a href="CONTRIBUTING.md">Contribute</a>
+</p>
+
+<p align="center">
+  <sub>v0.1.0 prerelease · Verified on Apple silicon macOS · Not notarized by Apple</sub>
+</p>
+
+<p align="center">
   English ·
   <a href="docs/README.zh-CN.md">简体中文</a> ·
   <a href="docs/README.ja.md">日本語</a> ·
   <a href="docs/README.fr.md">Français</a> ·
   <a href="docs/README.ru.md">Русский</a>
-</p>
-
-<p align="center">
-  <a href="#what-wakegpt-does">Features</a> ·
-  <a href="#capture-from-three-places">How it works</a> ·
-  <a href="#project-status">Project status</a> ·
-  <a href="CONTRIBUTING.md">Contribute</a>
 </p>
 
 ---
@@ -115,6 +123,8 @@ Report security issues privately as described in [SECURITY.md](SECURITY.md). Do 
 ## Contributing
 
 Bug reports, feature proposals, documentation improvements, and code contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before starting.
+
+If WakeGPT helps you keep useful ideas from getting lost, consider starring the repository so you can follow future releases.
 
 WakeGPT is licensed under the [Apache License 2.0](LICENSE), with `Copyright 2026 WakeGPT Contributors`. Third-party components retain their own licenses; provenance and license summaries are listed in [NOTICE.md](NOTICE.md).
 
