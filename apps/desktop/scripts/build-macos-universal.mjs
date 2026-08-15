@@ -1,15 +1,26 @@
 import { spawnSync } from "node:child_process";
 import { constants } from "node:fs";
-import { access, readFile, readdir, realpath, stat } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { access, readFile, readdir, readlink, realpath, stat } from "node:fs/promises";
+import { dirname, join, relative, resolve } from "node:path";
 import { homedir } from "node:os";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const TARGETS = ["aarch64-apple-darwin", "x86_64-apple-darwin"];
 const appRoot = fileURLToPath(new URL("..", import.meta.url));
 const workspaceRoot = fileURLToPath(new URL("../../..", import.meta.url));
 const toolchainFile = join(workspaceRoot, "rust-toolchain.toml");
 const tauri = join(appRoot, "node_modules", ".bin", "tauri");
+const universalApp = join(
+  appRoot,
+  "src-tauri",
+  "target",
+  "universal-apple-darwin",
+  "release",
+  "bundle",
+  "macos",
+  "WakeGPT.app",
+);
+const ENCODED_FLAG_SEPARATOR = "\u001f";
 
 const parseArguments = (arguments_) => {
   if (arguments_.length === 0) return { checkOnly: false };
@@ -38,6 +49,56 @@ const regularExecutable = async (path, label) => {
   if (!metadata.isFile()) throw new Error(`${label} must resolve to a regular file`);
   await access(canonical, constants.X_OK);
   return canonical;
+};
+
+const releasePathRemappings = async () => {
+  const cargoHome = resolve(process.env.CARGO_HOME || join(homedir(), ".cargo"));
+  const requested = [
+    { source: homedir(), destination: "/wakegpt-build/home" },
+    { source: cargoHome, destination: "/wakegpt-build/cargo" },
+    { source: workspaceRoot, destination: "/wakegpt-build/workspace" },
+  ];
+  const remappings = [];
+  const seen = new Set();
+  for (const mapping of requested) {
+    for (const source of [mapping.source, await realpath(mapping.source)]) {
+      const key = `${source}\u0000${mapping.destination}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      remappings.push({ ...mapping, source });
+    }
+  }
+  return remappings;
+};
+
+const encodedRemapFlags = (remappings) => remappings
+  .flatMap(({ source, destination }) => ["--remap-path-prefix", `${source}=${destination}`])
+  .join(ENCODED_FLAG_SEPARATOR);
+
+export const assertNoUserPaths = async (directory) => {
+  const markers = [...new Set(["/Users/", `${homedir()}/`])].map((value) => Buffer.from(value));
+  const containsMarker = (contents) => markers.some((marker) => contents.includes(marker));
+  const visit = async (current) => {
+    const entries = await readdir(current, { withFileTypes: true });
+    for (const entry of entries) {
+      const path = join(current, entry.name);
+      if (entry.isDirectory()) {
+        await visit(path);
+      } else if (entry.isFile()) {
+        const contents = await readFile(path);
+        if (containsMarker(contents)) {
+          throw new Error(
+            `${relative(appRoot, path)} contains a local macOS user-home path`,
+          );
+        }
+      } else if (entry.isSymbolicLink() && containsMarker(Buffer.from(await readlink(path)))) {
+        throw new Error(`${relative(appRoot, path)} links to a local macOS user-home path`);
+      }
+    }
+  };
+  const metadata = await stat(directory);
+  if (!metadata.isDirectory()) throw new Error("WakeGPT Universal app bundle was not produced");
+  await visit(directory);
 };
 
 const findRustup = async () => {
@@ -130,13 +191,19 @@ const main = async () => {
     throw new Error("macOS Universal release builds are supported only on macOS");
   }
   const { checkOnly } = parseArguments(process.argv.slice(2));
-  const toolchain = await resolveToolchain();
+  const [toolchain, remappings] = await Promise.all([
+    resolveToolchain(),
+    releasePathRemappings(),
+  ]);
   if (checkOnly) {
     console.log(JSON.stringify({
       source: "rustup",
       toolchain: toolchain.channel,
       host: toolchain.host,
       targets: TARGETS,
+      rustflagsEnvironment: "CARGO_ENCODED_RUSTFLAGS",
+      remapDestinations: [...new Set(remappings.map(({ destination }) => destination))],
+      scansUserHomePaths: true,
     }));
     return;
   }
@@ -147,6 +214,7 @@ const main = async () => {
     RUSTC: toolchain.rustc,
     RUSTDOC: toolchain.rustdoc,
     RUSTUP_TOOLCHAIN: toolchain.channel,
+    CARGO_ENCODED_RUSTFLAGS: encodedRemapFlags(remappings),
     PATH: `${toolchain.toolDirectory}:${process.env.PATH || ""}`,
   };
   const result = spawnSync(tauri, ["build", "--bundles", "app", "--target", "universal-apple-darwin"], {
@@ -157,9 +225,12 @@ const main = async () => {
   if (result.error || result.status !== 0) {
     throw new Error("Tauri macOS Universal release build failed");
   }
+  await assertNoUserPaths(universalApp);
 };
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exitCode = 1;
-});
+if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  });
+}
