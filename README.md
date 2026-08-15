@@ -24,7 +24,7 @@
 </p>
 
 <p align="center">
-  <sub>v0.1.1 prerelease · Verified on Apple silicon macOS · Not notarized by Apple</sub>
+  <sub>v0.1.1 release · Verified on Apple silicon macOS · Not notarized by Apple</sub>
 </p>
 
 <p align="center">
@@ -79,10 +79,10 @@ WakeGPT manages only clearly marked quick-note regions in a Markdown file. The r
 
 ## Project status
 
-WakeGPT is open source and currently available as a **macOS prototype**. The [`v0.1.1` macOS prerelease](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1) is available now.
+WakeGPT is open source and currently available as a **macOS prototype**. The [`v0.1.1` macOS release](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1) is available now.
 
 - Runtime behavior has been verified on Apple Silicon macOS.
-- `v0.1.1` is a macOS-only prerelease.
+- `v0.1.1` is a full GitHub Release for macOS only.
 - Its Universal app bundle contains both Apple Silicon and Intel code; execution on physical Intel hardware is still unverified.
 - The release uses complete ad-hoc code seals and hardened runtime, but it is **not** signed with an Apple Developer ID or notarized by Apple. macOS may therefore block the first launch.
 - The ChatGPT side card is experimental and has been verified only against the exact host versions recorded by this repository. It safely disables itself when the host contract changes.

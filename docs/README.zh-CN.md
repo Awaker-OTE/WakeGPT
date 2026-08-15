@@ -60,10 +60,10 @@ WakeGPT 只管理 Markdown 中带有明确标记的速记区域，不会接管�
 
 ## 当前状态
 
-WakeGPT 目前是开源的 **macOS 原型**，[`v0.1.1` macOS 预发布版](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1)现已可以下载。
+WakeGPT 目前是开源的 **macOS 原型**，[`v0.1.1` macOS 正式 GitHub Release](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1) 现已可以下载。
 
 - 已在 Apple Silicon macOS 上完成运行验证。
-- `v0.1.1` 是仅面向 macOS 的预发布版。
+- `v0.1.1` 是仅面向 macOS 的正式 GitHub Release。
 - 其中的 Universal App Bundle 同时包含 Apple Silicon 与 Intel 代码；真实 Intel Mac 运行仍待验证。
 - 此版本采用完整的 ad-hoc 代码签封并启用 hardened runtime，但**没有**使用 Apple Developer ID 签名，也**没有**经过 Apple 公证，因此 macOS 可能阻止首次启动。
 - ChatGPT 侧边速记卡属于实验性接入，目前只对仓库记录的精确宿主版本完成验证；宿主契约变化时会安全停用。

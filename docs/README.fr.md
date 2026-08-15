@@ -60,10 +60,10 @@ WakeGPT ne gère que les zones de notes rapides clairement balisées dans un fic
 
 ## État du projet
 
-WakeGPT est actuellement un **prototype macOS** open source. La [préversion macOS `v0.1.1`](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1) est disponible au téléchargement.
+WakeGPT est actuellement un **prototype macOS** open source. La [GitHub Release macOS officielle `v0.1.1`](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1) est disponible au téléchargement.
 
 - Le fonctionnement a été vérifié sur macOS avec Apple Silicon.
-- `v0.1.1` est une préversion réservée à macOS.
+- `v0.1.1` est une GitHub Release officielle réservée à macOS.
 - Son App Bundle Universal contient du code Apple Silicon et Intel ; l'exécution sur un véritable Mac Intel reste à vérifier.
 - Cette version utilise un scellement de code ad-hoc complet avec hardened runtime, mais elle n'est **ni** signée avec un Apple Developer ID **ni** notarisée par Apple. macOS peut donc bloquer le premier lancement.
 - La carte latérale ChatGPT est expérimentale et n'a été vérifiée qu'avec les versions exactes de l'hôte consignées dans le dépôt. Elle se désactive de manière sûre si le contrat de l'hôte change.
