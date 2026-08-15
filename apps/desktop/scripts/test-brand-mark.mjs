@@ -31,7 +31,7 @@ assert.doesNotMatch(card, /element\("span", "mark", "W"\)/u);
 assert.match(card, /codex-26\.803\.81509-v41/u);
 assert.match(adapter, /codex-26\.803\.81509-v41/u);
 assert.match(lifecycle, /fn menu_bar_template_icon\(\) -> Image<'static>/u);
-assert.match(lifecycle, /template_icon_is_an_antialiased_w_monogram/u);
+assert.match(lifecycle, /template_icon_is_an_antialiased_stacked_note_mark/u);
 assert.match(lifecycle, /for x in 0\.\.22[\s\S]*alpha_at\(x, 0\)[\s\S]*alpha_at\(x, 17\)/u);
 assert.match(lifecycle, /for y in 0\.\.18[\s\S]*alpha_at\(0, y\)[\s\S]*alpha_at\(21, y\)/u);
 assert.match(lifecycle, /\.icon_as_template\(true\)/u);
