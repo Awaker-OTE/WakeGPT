@@ -60,16 +60,16 @@ WakeGPT 只管理 Markdown 中带有明确标记的速记区域，不会接管�
 
 ## 当前状态
 
-WakeGPT 目前是开源的 **macOS 原型**，[`v0.1.0` macOS 预发布版](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.0)现已可以下载。
+WakeGPT 目前是开源的 **macOS 原型**，[`v0.1.1` macOS 预发布版](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1)现已可以下载。
 
 - 已在 Apple Silicon macOS 上完成运行验证。
-- `v0.1.0` 是仅面向 macOS 的预发布版。
+- `v0.1.1` 是仅面向 macOS 的预发布版。
 - 其中的 Universal App Bundle 同时包含 Apple Silicon 与 Intel 代码；真实 Intel Mac 运行仍待验证。
 - 此版本采用完整的 ad-hoc 代码签封并启用 hardened runtime，但**没有**使用 Apple Developer ID 签名，也**没有**经过 Apple 公证，因此 macOS 可能阻止首次启动。
 - ChatGPT 侧边速记卡属于实验性接入，目前只对仓库记录的精确宿主版本完成验证；宿主契约变化时会安全停用。
 - Windows x64 版本正在开发中，尚未正式发布，也未在真实 Windows 硬件上完成验证。
 
-请只从 [`v0.1.0` 官方 GitHub Release](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.0) 下载，并用其中的 `SHA256SUMS.txt` 核对 SHA-256。首次尝试打开 WakeGPT 后，如 macOS 拦截，请进入 **系统设置 → 隐私与安全 → 仍要打开**。可参考 [Apple 官方说明](https://support.apple.com/zh-cn/guide/mac-help/mh40616/mac)。WakeGPT 不会要求用户关闭 Gatekeeper，也不会要求执行 `xattr` 来移除隔离属性。
+请只从 [`v0.1.1` 官方 GitHub Release](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1) 下载，并用其中的 `SHA256SUMS.txt` 核对 SHA-256。首次尝试打开 WakeGPT 后，如 macOS 拦截，请进入 **系统设置 → 隐私与安全 → 仍要打开**。可参考 [Apple 官方说明](https://support.apple.com/zh-cn/guide/mac-help/mh40616/mac)。WakeGPT 不会要求用户关闭 Gatekeeper，也不会要求执行 `xattr` 来移除隔离属性。
 
 ## 从源码运行
 
@@ -90,7 +90,7 @@ rustup target add aarch64-apple-darwin x86_64-apple-darwin
 npm run release:macos-universal
 ```
 
-源码构建仍属于开发或本机验证产物。可下载的 `v0.1.0` 同样未经 Apple 公证，但已经过 WakeGPT 的发布检查，并同时提供校验和与供应链记录。
+源码构建仍属于开发或本机验证产物。可下载的 `v0.1.1` 同样未经 Apple 公证，但已经过 WakeGPT 的发布检查，并同时提供校验和与供应链记录。
 
 ## 隐私与安全
 

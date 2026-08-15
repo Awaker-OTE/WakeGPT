@@ -60,16 +60,16 @@ WakeGPT ne gère que les zones de notes rapides clairement balisées dans un fic
 
 ## État du projet
 
-WakeGPT est actuellement un **prototype macOS** open source. La [préversion macOS `v0.1.0`](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.0) est disponible au téléchargement.
+WakeGPT est actuellement un **prototype macOS** open source. La [préversion macOS `v0.1.1`](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1) est disponible au téléchargement.
 
 - Le fonctionnement a été vérifié sur macOS avec Apple Silicon.
-- `v0.1.0` est une préversion réservée à macOS.
+- `v0.1.1` est une préversion réservée à macOS.
 - Son App Bundle Universal contient du code Apple Silicon et Intel ; l'exécution sur un véritable Mac Intel reste à vérifier.
 - Cette version utilise un scellement de code ad-hoc complet avec hardened runtime, mais elle n'est **ni** signée avec un Apple Developer ID **ni** notarisée par Apple. macOS peut donc bloquer le premier lancement.
 - La carte latérale ChatGPT est expérimentale et n'a été vérifiée qu'avec les versions exactes de l'hôte consignées dans le dépôt. Elle se désactive de manière sûre si le contrat de l'hôte change.
 - La prise en charge de Windows x64 est en cours de développement ; elle n'est ni publiée ni vérifiée sur une machine Windows réelle.
 
-Téléchargez WakeGPT uniquement depuis la [GitHub Release officielle `v0.1.0`](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.0) et comparez sa valeur SHA-256 au fichier `SHA256SUMS.txt` inclus. Après une première tentative d'ouverture, macOS peut demander d'aller dans **Réglages Système → Confidentialité et sécurité → Ouvrir quand même**. Consultez aussi [les instructions Apple](https://support.apple.com/fr-fr/guide/mac-help/mh40616/mac). WakeGPT ne demande pas de désactiver Gatekeeper ni de supprimer la quarantaine avec `xattr`.
+Téléchargez WakeGPT uniquement depuis la [GitHub Release officielle `v0.1.1`](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1) et comparez sa valeur SHA-256 au fichier `SHA256SUMS.txt` inclus. Après une première tentative d'ouverture, macOS peut demander d'aller dans **Réglages Système → Confidentialité et sécurité → Ouvrir quand même**. Consultez aussi [les instructions Apple](https://support.apple.com/fr-fr/guide/mac-help/mh40616/mac). WakeGPT ne demande pas de désactiver Gatekeeper ni de supprimer la quarantaine avec `xattr`.
 
 ## Exécuter depuis les sources
 
@@ -90,7 +90,7 @@ rustup target add aarch64-apple-darwin x86_64-apple-darwin
 npm run release:macos-universal
 ```
 
-Un build depuis les sources reste un artefact de développement ou de vérification locale. Le paquet `v0.1.0` téléchargeable n'est pas non plus notarisé par Apple, mais il a passé les contrôles de publication de WakeGPT et est accompagné de sommes de contrôle et de documents de chaîne d'approvisionnement.
+Un build depuis les sources reste un artefact de développement ou de vérification locale. Le paquet `v0.1.1` téléchargeable n'est pas non plus notarisé par Apple, mais il a passé les contrôles de publication de WakeGPT et est accompagné de sommes de contrôle et de documents de chaîne d'approvisionnement.
 
 ## Confidentialité et sécurité
 

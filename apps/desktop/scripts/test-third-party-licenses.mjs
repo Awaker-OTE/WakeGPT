@@ -33,6 +33,7 @@ import {
 const appRoot = fileURLToPath(new URL("..", import.meta.url));
 const generator = fileURLToPath(new URL("./generate-third-party-licenses.mjs", import.meta.url));
 const temporaryRoot = await mkdtemp(join(tmpdir(), "wakegpt-third-party-licenses-"));
+const packageVersion = JSON.parse(await readFile(join(appRoot, "package.json"), "utf8")).version;
 
 function tarHeader(path, size) {
   const header = Buffer.alloc(512);
@@ -76,7 +77,7 @@ function runGenerator(outputDirectory, expectedStatus = 0, environment = {}) {
 
 async function readGenerated(outputDirectory) {
   return {
-    manifest: await readFile(join(outputDirectory, "wakegpt-0.1.0-third-party-licenses.json"), "utf8"),
+    manifest: await readFile(join(outputDirectory, `wakegpt-${packageVersion}-third-party-licenses.json`), "utf8"),
     bundle: await readFile(join(outputDirectory, "THIRD-PARTY-LICENSES.txt"), "utf8"),
   };
 }
@@ -97,6 +98,7 @@ try {
   assert.equal(manifest.components.filter((item) => item.ecosystem === "cargo").length, 488);
   assert.equal(manifest.components.length, manifest.componentCount);
   assert.equal(new Set(manifest.components.map((item) => item.purl)).size, manifest.componentCount);
+  assert.equal(manifest.project.version, packageVersion);
   assert.equal(manifest.project.licenseDecision, "Apache-2.0");
   assert.match(first.bundle, /WakeGPT itself is licensed under Apache-2\.0/u);
 

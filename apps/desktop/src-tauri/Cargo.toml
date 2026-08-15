@@ -1,6 +1,6 @@
 [package]
 name = "wakegpt-desktop"
-version = "0.1.0"
+version = "0.1.1"
 description = "Local-first quick capture and managed Markdown notes"
 authors = ["WakeGPT Contributors"]
 license = "Apache-2.0"

@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 const appRoot = fileURLToPath(new URL("..", import.meta.url));
 const generator = fileURLToPath(new URL("./generate-update-manifest.mjs", import.meta.url));
 const tauri = join(appRoot, "node_modules", ".bin", process.platform === "win32" ? "tauri.cmd" : "tauri");
+const projectVersion = JSON.parse(await readFile(join(appRoot, "package.json"), "utf8")).version;
 const tar = process.platform === "darwin" ? "/usr/bin/tar" : "tar";
 const root = await mkdtemp(join(tmpdir(), "wakegpt-update-manifest-"));
 const signerTestPhrase = ["wakegpt", "ephemeral", "test", "key"].join("-");
@@ -53,8 +54,8 @@ try {
 <plist version="1.0"><dict>
 <key>CFBundleIdentifier</key><string>com.wakegpt.desktop</string>
 <key>CFBundleExecutable</key><string>wakegpt-desktop</string>
-<key>CFBundleShortVersionString</key><string>0.1.0</string>
-<key>CFBundleVersion</key><string>0.1.0</string>
+<key>CFBundleShortVersionString</key><string>${projectVersion}</string>
+<key>CFBundleVersion</key><string>${projectVersion}</string>
 </dict></plist>
 `, "utf8");
   await writeFile(executable, "synthetic universal executable\n", "utf8");
@@ -87,7 +88,7 @@ try {
     signaturePath = signature,
     publicKeyPath = publicKey,
     notesPath = notes,
-    version = "0.1.0",
+    version = projectVersion,
     repository = "wakegpt/wakegpt",
     target = "darwin-universal",
     pubDate = "2026-08-12T00:00:00Z",
@@ -114,12 +115,12 @@ try {
   assert.doesNotMatch(firstBytes, /(?:\/tmp\/|\/private\/tmp\/|\/Users\/|[A-Za-z]:\\Users\\)/u);
   const manifest = JSON.parse(firstBytes);
   assert.deepEqual(Object.keys(manifest.platforms), ["darwin-universal"]);
-  assert.equal(manifest.version, "0.1.0");
+  assert.equal(manifest.version, projectVersion);
   assert.equal(manifest.pub_date, "2026-08-12T00:00:00Z");
   assert.equal(manifest.notes, "## 中文\n\n安全更新。\n\n## English\n\nSecurity update.");
   assert.equal(
     manifest.platforms["darwin-universal"].url,
-    "https://github.com/wakegpt/wakegpt/releases/download/v0.1.0/WakeGPT_universal.app.tar.gz",
+    `https://github.com/wakegpt/wakegpt/releases/download/v${projectVersion}/WakeGPT_universal.app.tar.gz`,
   );
   assert.equal(
     manifest.platforms["darwin-universal"].signature,
@@ -198,7 +199,7 @@ try {
   }), 1);
   const mismatchedVersionResult = run(argumentsFor({
     output: join(root, "mismatched-version", "latest-darwin-universal.json"),
-    version: "0.1.1",
+    version: "9.9.9",
   }), 1);
   assert.match(mismatchedVersionResult.stderr, /must match package\.json/u);
   run(argumentsFor({

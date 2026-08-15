@@ -1810,7 +1810,8 @@ fn parse_active_port(contents: &str) -> Result<DebugEndpoint, AdapterError> {
 
 fn fetch_target_list(port: u16) -> Result<Vec<u8>, AdapterError> {
     let address = SocketAddrV4::new(Ipv4Addr::LOCALHOST, port);
-    let timeout = Duration::from_millis(800);
+    // Keep the loopback probe bounded while allowing a cold local endpoint to accept.
+    let timeout = Duration::from_secs(2);
     let mut stream = TcpStream::connect_timeout(&address.into(), timeout)
         .map_err(|_| AdapterError::EndpointUnavailable)?;
     stream

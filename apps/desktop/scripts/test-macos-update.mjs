@@ -16,6 +16,7 @@ import { fileURLToPath } from "node:url";
 const appRoot = fileURLToPath(new URL("..", import.meta.url));
 const packager = fileURLToPath(new URL("./package-macos-update.mjs", import.meta.url));
 const tauri = join(appRoot, "node_modules", ".bin", process.platform === "win32" ? "tauri.cmd" : "tauri");
+const projectVersion = JSON.parse(await readFile(join(appRoot, "package.json"), "utf8")).version;
 const keyPathVariable = ["TAURI", "SIGNING", "PRIVATE", "KEY", "PATH"].join("_");
 const keyValueVariable = ["TAURI", "SIGNING", "PRIVATE", "KEY"].join("_");
 const keyPasswordVariable = ["TAURI", "SIGNING", "PRIVATE", "KEY", "PASSWORD"].join("_");
@@ -72,7 +73,7 @@ const packageArguments = (
 ) => [
   "--app", appPath,
   "--output-dir", outputDirectory,
-  "--version", "0.1.0",
+  "--version", projectVersion,
   "--repository", "wakegpt/wakegpt",
   "--public-key", publicKey,
   "--pub-date", "2026-08-12T00:00:00Z",
@@ -110,8 +111,8 @@ try {
 <key>CFBundleIdentifier</key><string>com.wakegpt.desktop</string>
 <key>CFBundleName</key><string>WakeGPT</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>0.1.0</string>
-<key>CFBundleVersion</key><string>0.1.0</string>
+<key>CFBundleShortVersionString</key><string>${projectVersion}</string>
+<key>CFBundleVersion</key><string>${projectVersion}</string>
 </dict></plist>
 `, "utf8");
   const signed = spawnSync("/usr/bin/codesign", [
@@ -154,7 +155,7 @@ try {
   const second = run(packageArguments(secondDirectory), 0, signingEnvironment());
   const firstReport = JSON.parse(first.stdout.trim());
   assert.equal(firstReport.mode, "adhoc-public-unnotarized");
-  assert.equal(firstReport.version, "0.1.0");
+  assert.equal(firstReport.version, projectVersion);
   assert.equal(firstReport.target, "darwin-universal");
   assert.match(firstReport.files.archive.sha256, /^[a-f0-9]{64}$/u);
   assert.deepEqual(
@@ -163,7 +164,7 @@ try {
     "normalized update archives must be byte reproducible",
   );
   const manifest = JSON.parse(await readFile(join(firstDirectory, "latest-darwin-universal.json"), "utf8"));
-  assert.equal(manifest.version, "0.1.0");
+  assert.equal(manifest.version, projectVersion);
   assert.equal(
     manifest.platforms["darwin-universal"].signature,
     (await readFile(join(firstDirectory, "WakeGPT_universal.app.tar.gz.sig"), "utf8")).trim(),

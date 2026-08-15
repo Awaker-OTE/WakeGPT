@@ -17,14 +17,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.0"><strong>Download for macOS</strong></a> ·
+  <a href="https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1"><strong>Download for macOS</strong></a> ·
   <a href="#what-wakegpt-does">See features</a> ·
   <a href="#project-status">Project status</a> ·
   <a href="CONTRIBUTING.md">Contribute</a>
 </p>
 
 <p align="center">
-  <sub>v0.1.0 prerelease · Verified on Apple silicon macOS · Not notarized by Apple</sub>
+  <sub>v0.1.1 prerelease · Verified on Apple silicon macOS · Not notarized by Apple</sub>
 </p>
 
 <p align="center">
@@ -79,16 +79,16 @@ WakeGPT manages only clearly marked quick-note regions in a Markdown file. The r
 
 ## Project status
 
-WakeGPT is open source and currently available as a **macOS prototype**. The [`v0.1.0` macOS prerelease](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.0) is available now.
+WakeGPT is open source and currently available as a **macOS prototype**. The [`v0.1.1` macOS prerelease](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1) is available now.
 
 - Runtime behavior has been verified on Apple Silicon macOS.
-- `v0.1.0` is a macOS-only prerelease.
+- `v0.1.1` is a macOS-only prerelease.
 - Its Universal app bundle contains both Apple Silicon and Intel code; execution on physical Intel hardware is still unverified.
 - The release uses complete ad-hoc code seals and hardened runtime, but it is **not** signed with an Apple Developer ID or notarized by Apple. macOS may therefore block the first launch.
 - The ChatGPT side card is experimental and has been verified only against the exact host versions recorded by this repository. It safely disables itself when the host contract changes.
 - Windows x64 support is in development and is not yet released or verified on physical Windows hardware.
 
-Download `v0.1.0` only from its [official GitHub Release](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.0) and compare its SHA-256 value with the included `SHA256SUMS.txt`. After trying to open WakeGPT once, macOS may require you to open **System Settings → Privacy & Security** and choose **Open Anyway**. See [Apple's instructions for opening an app from an unknown developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac). WakeGPT does not ask users to disable Gatekeeper or remove quarantine attributes with `xattr`.
+Download `v0.1.1` only from its [official GitHub Release](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1) and compare its SHA-256 value with the included `SHA256SUMS.txt`. After trying to open WakeGPT once, macOS may require you to open **System Settings → Privacy & Security** and choose **Open Anyway**. See [Apple's instructions for opening an app from an unknown developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac). WakeGPT does not ask users to disable Gatekeeper or remove quarantine attributes with `xattr`.
 
 ## Run from source
 
@@ -109,7 +109,7 @@ rustup target add aarch64-apple-darwin x86_64-apple-darwin
 npm run release:macos-universal
 ```
 
-Source builds remain development or local-verification artifacts. The downloadable `v0.1.0` package is also unnotarized, but it was produced through WakeGPT's release checks and is published with checksums and supply-chain records.
+Source builds remain development or local-verification artifacts. The downloadable `v0.1.1` package is also unnotarized, but it was produced through WakeGPT's release checks and is published with checksums and supply-chain records.
 
 ## Privacy and safety
 

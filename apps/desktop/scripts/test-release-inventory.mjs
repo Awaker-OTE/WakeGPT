@@ -9,8 +9,9 @@ import { fileURLToPath } from "node:url";
 const appRoot = fileURLToPath(new URL("..", import.meta.url));
 const generator = fileURLToPath(new URL("./generate-release-inventory.mjs", import.meta.url));
 const outputDirectory = await mkdtemp(join(tmpdir(), "wakegpt-release-inventory-"));
-const sbomPath = join(outputDirectory, "wakegpt-0.1.0.cdx.json");
-const licensePath = join(outputDirectory, "wakegpt-0.1.0-licenses.json");
+const packageVersion = JSON.parse(await readFile(join(appRoot, "package.json"), "utf8")).version;
+const sbomPath = join(outputDirectory, `wakegpt-${packageVersion}.cdx.json`);
+const licensePath = join(outputDirectory, `wakegpt-${packageVersion}-licenses.json`);
 
 const [projectLicense, cargoManifest, readme, notices, contributing] = await Promise.all([
   readFile(join(appRoot, "../..", "LICENSE"), "utf8"),
@@ -55,7 +56,9 @@ try {
   assert.equal(sbom.bomFormat, "CycloneDX");
   assert.equal(sbom.specVersion, "1.6");
   assert.equal(sbom.metadata.component.name, "wakegpt-desktop");
+  assert.equal(sbom.metadata.component.version, packageVersion);
   assert.deepEqual(sbom.metadata.component.licenses, [{ license: { id: "Apache-2.0" } }]);
+  assert.equal(licenses.project.version, packageVersion);
   assert.equal(licenses.project.licenseDecision, "Apache-2.0");
   assert.ok(sbom.components.length > 600, "the complete npm and Cargo lock graphs must be present");
   assert.equal(licenses.componentCount, sbom.components.length);
