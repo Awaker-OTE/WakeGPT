@@ -505,16 +505,23 @@ fn update_integration_menu_label(
 fn menu_bar_template_icon() -> Image<'static> {
     const WIDTH: usize = 22;
     const HEIGHT: usize = 18;
-    const SAMPLES_PER_AXIS: usize = 4;
-    const STROKE_RADIUS: f64 = 0.95;
+    const SAMPLES_PER_AXIS: usize = 8;
+    const STROKE_RADIUS: f64 = 0.72;
 
-    // The full-colour app mark is too detailed at menu-bar size. This purpose-built
-    // wide W remains recognizable as a monochrome macOS template at 22 by 18 points.
+    // Mirror the app's stacked-note mark with only the strokes that survive at
+    // menu-bar size: the rear sheet, the folded front sheet, and two text lines.
     let segments = [
-        ((3.0, 3.5), (6.5, 14.4)),
-        ((6.5, 14.4), (11.0, 7.6)),
-        ((11.0, 7.6), (15.5, 14.4)),
-        ((15.5, 14.4), (19.0, 3.5)),
+        ((8.0, 2.75), (18.0, 2.75)),
+        ((18.0, 2.75), (18.0, 13.0)),
+        ((4.0, 5.0), (12.5, 5.0)),
+        ((12.5, 5.0), (15.5, 8.0)),
+        ((15.5, 8.0), (15.5, 15.0)),
+        ((15.5, 15.0), (4.0, 15.0)),
+        ((4.0, 15.0), (4.0, 5.0)),
+        ((12.5, 5.0), (12.5, 8.0)),
+        ((12.5, 8.0), (15.5, 8.0)),
+        ((7.0, 10.25), (12.5, 10.25)),
+        ((7.0, 12.5), (10.75, 12.5)),
     ];
 
     let distance_squared = |point: (f64, f64), segment: &((f64, f64), (f64, f64))| {
@@ -678,7 +685,7 @@ mod tests {
 
     #[cfg(target_os = "macos")]
     #[test]
-    fn template_icon_is_an_antialiased_w_monogram() {
+    fn template_icon_is_an_antialiased_stacked_note_mark() {
         let icon = menu_bar_template_icon();
         assert_eq!(icon.width(), 22);
         assert_eq!(icon.height(), 18);
@@ -698,13 +705,16 @@ mod tests {
             assert_eq!(alpha_at(0, y), 0);
             assert_eq!(alpha_at(21, y), 0);
         }
-        assert!(alpha_at(3, 4) > 0);
-        assert!(alpha_at(6, 14) > 0);
-        assert!(alpha_at(11, 8) > 0);
-        assert!(alpha_at(15, 14) > 0);
-        assert!(alpha_at(19, 4) > 0);
-        assert_eq!(alpha_at(11, 4), 0);
+        assert!(alpha_at(10, 2) > 0);
+        assert!(alpha_at(18, 7) > 0);
+        assert!(alpha_at(6, 5) > 0);
+        assert!(alpha_at(14, 6) > 0);
+        assert!(alpha_at(4, 9) > 0);
+        assert!(alpha_at(9, 10) > 0);
+        assert!(alpha_at(8, 12) > 0);
+        assert!(alpha_at(10, 15) > 0);
+        assert_eq!(alpha_at(9, 7), 0);
         assert_eq!(alpha_at(2, 14), 0);
-        assert_eq!(alpha_at(19, 14), 0);
+        assert_eq!(alpha_at(17, 14), 0);
     }
 }
