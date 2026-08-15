@@ -60,10 +60,10 @@ WakeGPT が管理するのは、Markdown 内で明示的にマークされたク
 
 ## 現在の状態
 
-WakeGPT は現在、オープンソースの **macOS プロトタイプ**です。[`v0.1.1` macOS プレリリース](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1)をダウンロードできます。
+WakeGPT は現在、オープンソースの **macOS プロトタイプ**です。[`v0.1.1` macOS 正式 GitHub Release](https://github.com/Awaker-OTE/WakeGPT/releases/tag/v0.1.1)をダウンロードできます。
 
 - Apple Silicon macOS で動作を確認済みです。
-- `v0.1.1` は macOS 専用のプレリリースです。
+- `v0.1.1` は macOS 専用の正式な GitHub Release です。
 - Universal App Bundle には Apple Silicon と Intel の両方のコードが含まれますが、実機の Intel Mac では未確認です。
 - このリリースは hardened runtime を有効にした完全な ad-hoc コードシールを使用しますが、Apple Developer ID では署名されず、Apple の公証も受けていません。そのため macOS が初回起動を止める場合があります。
 - ChatGPT サイドカードは実験的機能で、リポジトリに記録された特定のホスト版でのみ検証済みです。ホスト契約が変わった場合は安全に無効化されます。
